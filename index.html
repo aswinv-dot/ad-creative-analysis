@@ -141,7 +141,10 @@
               <option value="OTHERS">OTHERS</option>
             </select>
           </div>
-          <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
+          <div style="display:flex;gap:8px">
+            <button class="upload-json-btn" onclick="openUploadModal()">⬆ Import JSON</button>
+            <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
+          </div>
         </div>
 
         <div class="table-shell">
@@ -159,12 +162,23 @@
                 <th class="col-score sortable" data-col="pr_score" onclick="toggleSort('pr_score')">PR <span class="sort-arrow"></span></th>
                 <th class="col-score sortable" data-col="ta_score" onclick="toggleSort('ta_score')">TA <span class="sort-arrow"></span></th>
                 <th class="col-score sortable" data-col="avg_score" onclick="toggleSort('avg_score')">AVG <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="ctr" onclick="toggleSort('ctr')">CTR <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="clicks" onclick="toggleSort('clicks')">Clicks <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="reach" onclick="toggleSort('reach')">Reach <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="budget_spent" onclick="toggleSort('budget_spent')">Spent <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="total_leads" onclick="toggleSort('total_leads')">Leads <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="mql_leads" onclick="toggleSort('mql_leads')">MQL <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="mql_percent" onclick="toggleSort('mql_percent')">MQL% <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="click_to_lead_ratio" onclick="toggleSort('click_to_lead_ratio')">C2L <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="webinar_booked" onclick="toggleSort('webinar_booked')">W.Book <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="webinar_attended" onclick="toggleSort('webinar_attended')">W.Att <span class="sort-arrow"></span></th>
+                <th class="col-metric sortable" data-col="converted" onclick="toggleSort('converted')">Conv <span class="sort-arrow"></span></th>
                 <th class="col-date sortable" data-col="created_at" onclick="toggleSort('created_at')">Date <span class="sort-arrow"></span></th>
                 <th class="col-actions"></th>
               </tr>
             </thead>
             <tbody id="log-body">
-              <tr><td colspan="13" class="empty-cell">
+              <tr><td colspan="24" class="empty-cell">
                 <div class="empty-state">
                   <div class="empty-icon">◫</div>
                   <p>No entries yet. Add your first creative.</p>
@@ -198,8 +212,65 @@
               <div class="mscore"><label>TA</label><strong id="modal-ta"></strong></div>
               <div class="mscore avg"><label>AVG</label><strong id="modal-avg"></strong></div>
             </div>
+            <div class="modal-metrics-grid" id="modal-metrics-grid"></div>
             <div class="modal-date" id="modal-date"></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload JSON Modal -->
+    <div id="upload-modal" class="modal" onclick="closeUploadModalOutside(event)">
+      <div class="upload-modal-box">
+        <div class="upload-modal-header">
+          <div>
+            <div class="upload-modal-title">Import Metrics via JSON</div>
+            <div class="upload-modal-sub">Matches by Creative Name. Won't overwrite existing metrics unless you allow it per row.</div>
+          </div>
+          <button class="modal-close" onclick="closeUploadModal()">✕</button>
+        </div>
+
+        <div id="upload-drop-zone" class="upload-drop-zone">
+          <input type="file" id="json-file-input" accept=".json" />
+          <div class="drop-inner">
+            <span class="drop-icon" style="font-size:2rem">{ }</span>
+            <span>Drop or click to upload <strong>.json</strong></span>
+            <span id="upload-file-name" style="font-size:0.75rem;color:var(--accent-dim);margin-top:2px"></span>
+          </div>
+        </div>
+
+        <div id="upload-preview-section" style="display:none">
+          <div class="upload-summary-row" id="upload-summary"></div>
+
+          <div class="upload-table-wrap">
+            <table class="upload-preview-table">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Creative Name</th>
+                  <th>CTR</th>
+                  <th>Clicks</th>
+                  <th>Reach</th>
+                  <th>Spent</th>
+                  <th>Leads</th>
+                  <th>MQL</th>
+                  <th>MQL%</th>
+                  <th>C2L</th>
+                  <th>W.Book</th>
+                  <th>W.Att</th>
+                  <th>Conv</th>
+                  <th>Allow OW</th>
+                </tr>
+              </thead>
+              <tbody id="upload-preview-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="upload-modal-footer">
+          <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()" style="display:none">
+            Confirm Import
+          </button>
         </div>
       </div>
     </div>
@@ -209,6 +280,7 @@
     <script src="db.js"></script>
     <script src="ui.js"></script>
     <script src="filters.js"></script>
+    <script src="upload.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
