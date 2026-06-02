@@ -1,6 +1,5 @@
 // ── ui.js — Render functions: table, badges, modal ──
 
-// ── Badge helpers ──────────────────────────────────────────
 function approvalBadge(status) {
   const map = {
     "Approved":       "badge-approved",
@@ -26,7 +25,6 @@ function scoreDot(v, isAvg = false) {
 }
 
 function calcAvg(bl, pr, ta) {
-  const vals = [bl, pr, ta].map(Number).filter((n) => !isNaN(n) && n !== 0 || n === 0);
   const defined = [bl, pr, ta].filter((v) => v !== null && v !== "" && v !== undefined);
   if (!defined.length) return null;
   const nums = defined.map(Number).filter((n) => !isNaN(n));
@@ -45,7 +43,6 @@ function formatDate(iso) {
 
 // ── Render full table ──────────────────────────────────────
 function renderTable(rows) {
-  // Stats
   document.getElementById("stat-total").textContent = rows.length;
   document.getElementById("stat-approved").textContent = rows.filter((r) => r.approval === "Approved").length;
   document.getElementById("stat-pending").textContent = rows.filter((r) => r.approval === "Pending").length;
@@ -54,7 +51,7 @@ function renderTable(rows) {
 
   if (!rows.length) {
     tbody.innerHTML = `
-      <tr><td colspan="12" class="empty-cell">
+      <tr><td colspan="13" class="empty-cell">
         <div class="empty-state">
           <div class="empty-icon">◫</div>
           <p>No entries match your filters.</p>
@@ -65,21 +62,21 @@ function renderTable(rows) {
 
   tbody.innerHTML = rows.map((r, i) => {
     const avg = calcAvg(r.bl_score, r.pr_score, r.ta_score);
-    const rowData = encodeURIComponent(JSON.stringify(r));
     return `
     <tr>
       <td class="col-num">${i + 1}</td>
       <td class="col-img">
         ${r.image_url
           ? `<img src="${r.image_url}" class="thumb" alt="creative"
-               onclick='openModal(${JSON.stringify(r).replace(/'/g, "&#39;")})' 
+               onclick='openModal(${JSON.stringify(r).replace(/'/g, "&#39;").replace(/"/g, "&quot;")})'
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
              /><div class="thumb-placeholder" style="display:none">🖼</div>`
           : `<div class="thumb-placeholder">🖼</div>`
         }
       </td>
       <td class="col-name">${r.creative_name || "–"}</td>
-      <td class="col-tag">${r.program_tag ? `<span class="tag-pill">${r.program_tag}</span>` : "<span style='color:var(--muted)'>–</span>"}</td>
+      <td class="col-tag">${r.program_tag ? `<span class="tag-pill">${r.program_tag}</span>` : `<span style="color:var(--muted)">–</span>`}</td>
+      <td class="col-month" style="color:var(--muted);font-size:0.8rem">${r.month || "–"}</td>
       <td class="col-status">${approvalBadge(r.approval)}</td>
       <td class="col-notes"><div class="notes-cell">${r.notes || "–"}</div></td>
       <td class="col-score" style="text-align:center">${scoreDot(r.bl_score)}</td>
@@ -99,6 +96,9 @@ function renderTable(rows) {
 
 // ── Modal ──────────────────────────────────────────────────
 function openModal(row) {
+  if (typeof row === "string") {
+    try { row = JSON.parse(row); } catch(e) { return; }
+  }
   document.getElementById("modal-img").src = row.image_url || "";
   document.getElementById("modal-title").textContent = row.creative_name || "–";
   document.getElementById("modal-status-badge").innerHTML = approvalBadge(row.approval);
@@ -114,6 +114,9 @@ function openModal(row) {
   const tagPill = document.getElementById("modal-tag-pill");
   tagPill.textContent = row.program_tag || "";
 
+  const monthPill = document.getElementById("modal-month-pill");
+  monthPill.textContent = row.month || "";
+
   document.getElementById("detail-modal").classList.add("open");
 }
 
@@ -127,19 +130,10 @@ function closeModalDirect() {
   document.getElementById("detail-modal").classList.remove("open");
 }
 
-// ── Tag datalist + filter dropdown ────────────────────────
+// ── Tag filter dropdown (static list, no dynamic population needed) ──
 function populateTagFilters(rows) {
-  const tags = [...new Set(rows.map((r) => r.program_tag).filter(Boolean))].sort();
-
-  // Datalist for form autocomplete
-  const dl = document.getElementById("tag-suggestions");
-  dl.innerHTML = tags.map((t) => `<option value="${t}">`).join("");
-
-  // Dropdown filter
-  const sel = document.getElementById("tag-filter");
-  const current = sel.value;
-  sel.innerHTML = `<option value="">All Tags</option>` +
-    tags.map((t) => `<option value="${t}" ${t === current ? "selected" : ""}>${t}</option>`).join("");
+  // Tag filter is static in HTML; nothing dynamic needed
+  // But we keep this function for compatibility
 }
 
 // ── Toast ──────────────────────────────────────────────────
