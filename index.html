@@ -29,7 +29,7 @@
 
     <div class="layout">
 
-      <!-- ── Sidebar Form ── -->
+      <!-- Sidebar Form -->
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-title" id="form-mode-label">+ New Entry</div>
 
@@ -54,9 +54,25 @@
         </div>
 
         <div class="field-group">
-          <label>Program / Campaign Tag</label>
-          <input type="text" id="program-tag" placeholder="e.g. GOC, GHC, Ausbildung" list="tag-suggestions" />
-          <datalist id="tag-suggestions"></datalist>
+          <label>Program</label>
+          <select id="program-tag">
+            <option value="">Select program…</option>
+            <option value="GOC">GOC</option>
+            <option value="GHC">GHC</option>
+            <option value="AUSB">AUSB</option>
+            <option value="AUST PR">AUST PR</option>
+            <option value="CANADA PR">CANADA PR</option>
+            <option value="IELTS">IELTS</option>
+            <option value="GERMAN">GERMAN</option>
+            <option value="ALUM WEBINAR">ALUM WEBINAR</option>
+            <option value="AWARENESS">AWARENESS</option>
+            <option value="OTHERS">OTHERS</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Month</label>
+          <input type="text" id="month" placeholder="e.g. Jun 2026" />
         </div>
 
         <div class="field-group">
@@ -98,7 +114,7 @@
         </div>
       </aside>
 
-      <!-- ── Main Log ── -->
+      <!-- Main Log -->
       <main class="main-content">
 
         <div class="toolbar">
@@ -112,7 +128,17 @@
               <option value="Needs Revision">Needs Revision</option>
             </select>
             <select id="tag-filter" onchange="applyFilters()">
-              <option value="">All Tags</option>
+              <option value="">All Programs</option>
+              <option value="GOC">GOC</option>
+              <option value="GHC">GHC</option>
+              <option value="AUSB">AUSB</option>
+              <option value="AUST PR">AUST PR</option>
+              <option value="CANADA PR">CANADA PR</option>
+              <option value="IELTS">IELTS</option>
+              <option value="GERMAN">GERMAN</option>
+              <option value="ALUM WEBINAR">ALUM WEBINAR</option>
+              <option value="AWARENESS">AWARENESS</option>
+              <option value="OTHERS">OTHERS</option>
             </select>
           </div>
           <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
@@ -125,7 +151,8 @@
                 <th class="col-num">#</th>
                 <th class="col-img">Image</th>
                 <th class="col-name">Name</th>
-                <th class="col-tag">Tag</th>
+                <th class="col-tag">Program</th>
+                <th class="col-month">Month</th>
                 <th class="col-status">Status</th>
                 <th class="col-notes">Notes</th>
                 <th class="col-score sortable" data-col="bl_score" onclick="toggleSort('bl_score')">BL <span class="sort-arrow"></span></th>
@@ -137,7 +164,7 @@
               </tr>
             </thead>
             <tbody id="log-body">
-              <tr><td colspan="12" class="empty-cell">
+              <tr><td colspan="13" class="empty-cell">
                 <div class="empty-state">
                   <div class="empty-icon">◫</div>
                   <p>No entries yet. Add your first creative.</p>
@@ -160,6 +187,7 @@
           <div class="modal-info">
             <div class="modal-tag-row">
               <span id="modal-tag-pill" class="tag-pill"></span>
+              <span id="modal-month-pill" class="month-pill"></span>
               <span id="modal-status-badge"></span>
             </div>
             <h2 id="modal-title"></h2>
