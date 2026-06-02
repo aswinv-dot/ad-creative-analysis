@@ -665,3 +665,16 @@ tbody td {
   .header-right { display: none; }
   .main-content { padding: 16px; }
 }
+
+.month-pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--surface3);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.month-pill:empty { display: none; }
+.col-month { width: 90px; white-space: nowrap; }
