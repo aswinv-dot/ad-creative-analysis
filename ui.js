@@ -94,8 +94,8 @@ function renderTable(rows) {
   tbody.innerHTML = rows.map((r, i) => {
     const avg = calcAvg(r.bl_score, r.pr_score, r.ta_score);
 
-    // Analyst hides metric columns
-    const metricCells = role !== "analyst" ? METRIC_FIELDS.map((f) => {
+    // Reviewer hides metric columns
+    const metricCells = role !== "reviewer" ? METRIC_FIELDS.map((f) => {
       const v = r[f.key];
       return `<td class="col-metric ${v == null || v === "" ? "muted-cell" : ""}">${v != null && v !== "" ? f.fmt(v) : "–"}</td>`;
     }).join("") : "";
@@ -136,9 +136,9 @@ function renderTable(rows) {
     </tr>`;
   }).join("");
 
-  // Show/hide metric column headers
+  // Show/hide metric column headers — hidden for reviewer only
   document.querySelectorAll(".metric-th").forEach((th) => {
-    th.style.display = role === "analyst" ? "none" : "";
+    th.style.display = role === "reviewer" ? "none" : "";
   });
 }
 
