@@ -1,286 +1,352 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Approval Sign-Off Log</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Approval Sign-Off Log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-    <header>
-      <div class="header-left">
-        <div class="logo-mark">▣</div>
-        <div>
-          <h1>SIGN-OFF LOG</h1>
-          <p>Creative asset review &amp; approval tracking</p>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="stat-chip">Total <strong id="stat-total">0</strong></div>
-        <div class="stat-chip approved">Approved <strong id="stat-approved">0</strong></div>
-        <div class="stat-chip pending">Pending <strong id="stat-pending">0</strong></div>
-      </div>
-    </header>
-
-    <div class="layout">
-
-      <!-- Sidebar Form -->
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-title" id="form-mode-label">+ New Entry</div>
-
-        <div class="field-group">
-          <label>Creative Image</label>
-          <div class="drop-zone" id="drop-zone">
-            <input type="file" id="image-input" accept="image/*" />
-            <div class="drop-inner">
-              <span class="drop-icon">⬆</span>
-              <span>Drop or click to upload</span>
-            </div>
-          </div>
-          <div id="preview-wrap" style="display:none">
-            <img id="preview-img" alt="preview" />
-            <span id="preview-name"></span>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>Creative Name</label>
-          <input type="text" id="creative-name" placeholder="e.g. GNM Nursing – Airport Ad" />
-        </div>
-
-        <div class="field-group">
-          <label>Program</label>
-          <select id="program-tag">
-            <option value="">Select program…</option>
-            <option value="GOC">GOC</option>
-            <option value="GHC">GHC</option>
-            <option value="AUSB">AUSB</option>
-            <option value="AUST PR">AUST PR</option>
-            <option value="CANADA PR">CANADA PR</option>
-            <option value="IELTS">IELTS</option>
-            <option value="GERMAN">GERMAN</option>
-            <option value="ALUM WEBINAR">ALUM WEBINAR</option>
-            <option value="AWARENESS">AWARENESS</option>
-            <option value="OTHERS">OTHERS</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>Month</label>
-          <input type="text" id="month" placeholder="e.g. Jun 2026" />
-        </div>
-
-        <div class="field-group">
-          <label>Approval Status</label>
-          <select id="approval">
-            <option value="Approved">Approved</option>
-            <option value="Pending" selected>Pending</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Needs Revision">Needs Revision</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>Notes</label>
-          <textarea id="notes" placeholder="Feedback, context, version notes…"></textarea>
-        </div>
-
-        <div class="field-group">
-          <label>Scores — BL / PR / TA</label>
-          <div class="score-row">
-            <div class="score-field">
-              <span>BL</span>
-              <input type="number" id="bl-score" placeholder="–" min="0" max="10" step="0.1" />
-            </div>
-            <div class="score-field">
-              <span>PR</span>
-              <input type="number" id="pr-score" placeholder="–" min="0" max="10" step="0.1" />
-            </div>
-            <div class="score-field">
-              <span>TA</span>
-              <input type="number" id="ta-score" placeholder="–" min="0" max="10" step="0.1" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button id="submit-btn" onclick="submitEntry()">Save Entry</button>
-          <button id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel</button>
-        </div>
-      </aside>
-
-      <!-- Main Log -->
-      <main class="main-content">
-
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <input type="text" id="search-input" placeholder="Search creative or tag…" oninput="applyFilters()" />
-            <select id="approval-filter" onchange="applyFilters()">
-              <option value="">All Status</option>
-              <option value="Approved">Approved</option>
-              <option value="Pending">Pending</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Needs Revision">Needs Revision</option>
-            </select>
-            <select id="tag-filter" onchange="applyFilters()">
-              <option value="">All Programs</option>
-              <option value="GOC">GOC</option>
-              <option value="GHC">GHC</option>
-              <option value="AUSB">AUSB</option>
-              <option value="AUST PR">AUST PR</option>
-              <option value="CANADA PR">CANADA PR</option>
-              <option value="IELTS">IELTS</option>
-              <option value="GERMAN">GERMAN</option>
-              <option value="ALUM WEBINAR">ALUM WEBINAR</option>
-              <option value="AWARENESS">AWARENESS</option>
-              <option value="OTHERS">OTHERS</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="upload-json-btn" onclick="openUploadModal()">⬆ Import JSON</button>
-            <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
-          </div>
-        </div>
-
-        <div class="table-shell">
-          <table>
-            <thead>
-              <tr>
-                <th class="col-num">#</th>
-                <th class="col-img">Image</th>
-                <th class="col-name">Name</th>
-                <th class="col-tag">Program</th>
-                <th class="col-month">Month</th>
-                <th class="col-status">Status</th>
-                <th class="col-notes">Notes</th>
-                <th class="col-score sortable" data-col="bl_score" onclick="toggleSort('bl_score')">BL <span class="sort-arrow"></span></th>
-                <th class="col-score sortable" data-col="pr_score" onclick="toggleSort('pr_score')">PR <span class="sort-arrow"></span></th>
-                <th class="col-score sortable" data-col="ta_score" onclick="toggleSort('ta_score')">TA <span class="sort-arrow"></span></th>
-                <th class="col-score sortable" data-col="avg_score" onclick="toggleSort('avg_score')">AVG <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="ctr" onclick="toggleSort('ctr')">CTR <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="clicks" onclick="toggleSort('clicks')">Clicks <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="reach" onclick="toggleSort('reach')">Reach <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="budget_spent" onclick="toggleSort('budget_spent')">Spent <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="total_leads" onclick="toggleSort('total_leads')">Leads <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="mql_leads" onclick="toggleSort('mql_leads')">MQL <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="mql_percent" onclick="toggleSort('mql_percent')">MQL% <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="click_to_lead_ratio" onclick="toggleSort('click_to_lead_ratio')">C2L <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="webinar_booked" onclick="toggleSort('webinar_booked')">W.Book <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="webinar_attended" onclick="toggleSort('webinar_attended')">W.Att <span class="sort-arrow"></span></th>
-                <th class="col-metric sortable" data-col="converted" onclick="toggleSort('converted')">Conv <span class="sort-arrow"></span></th>
-                <th class="col-date sortable" data-col="created_at" onclick="toggleSort('created_at')">Date <span class="sort-arrow"></span></th>
-                <th class="col-actions"></th>
-              </tr>
-            </thead>
-            <tbody id="log-body">
-              <tr><td colspan="24" class="empty-cell">
-                <div class="empty-state">
-                  <div class="empty-icon">◫</div>
-                  <p>No entries yet. Add your first creative.</p>
-                </div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </main>
+<header>
+  <div class="header-left">
+    <div class="logo-mark">▣</div>
+    <div>
+      <h1>SIGN-OFF LOG</h1>
+      <p>Creative asset review &amp; approval tracking</p>
     </div>
+  </div>
+  <div class="header-center">
+    <div class="role-switcher">
+      <button class="role-btn active" data-role="uploader" onclick="switchRole('uploader')">⬆ Uploader</button>
+      <button class="role-btn" data-role="reviewer" onclick="switchRole('reviewer')">⭐ Reviewer</button>
+      <button class="role-btn" data-role="analyst" onclick="switchRole('analyst')">📊 Analyst</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat-chip">Total <strong id="stat-total">0</strong></div>
+    <div class="stat-chip approved">Approved <strong id="stat-approved">0</strong></div>
+    <div class="stat-chip pending">Pending <strong id="stat-pending">0</strong></div>
+  </div>
+</header>
 
-    <!-- Detail Modal -->
-    <div id="detail-modal" class="modal" onclick="closeModal(event)">
-      <div class="modal-box">
-        <button class="modal-close" onclick="closeModalDirect()">✕</button>
-        <div class="modal-layout">
-          <div class="modal-img-wrap">
-            <img id="modal-img" alt="creative" />
-          </div>
-          <div class="modal-info">
-            <div class="modal-tag-row">
-              <span id="modal-tag-pill" class="tag-pill"></span>
-              <span id="modal-month-pill" class="month-pill"></span>
-              <span id="modal-status-badge"></span>
-            </div>
-            <h2 id="modal-title"></h2>
-            <p id="modal-notes-text" class="modal-notes"></p>
-            <div class="modal-scores">
-              <div class="mscore"><label>BL</label><strong id="modal-bl"></strong></div>
-              <div class="mscore"><label>PR</label><strong id="modal-pr"></strong></div>
-              <div class="mscore"><label>TA</label><strong id="modal-ta"></strong></div>
-              <div class="mscore avg"><label>AVG</label><strong id="modal-avg"></strong></div>
-            </div>
-            <div class="modal-metrics-grid" id="modal-metrics-grid"></div>
-            <div class="modal-date" id="modal-date"></div>
-          </div>
+<div class="layout">
+
+  <!-- ── Uploader Sidebar ── -->
+  <aside class="sidebar" id="sidebar-uploader">
+    <div class="sidebar-title" id="form-mode-label">+ New Creative</div>
+    <div class="field-group">
+      <label>Creative Image</label>
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="image-input" accept="image/*" />
+        <div class="drop-inner">
+          <span class="drop-icon">⬆</span>
+          <span>Drop or click to upload</span>
+        </div>
+      </div>
+      <div id="preview-wrap" style="display:none">
+        <img id="preview-img" alt="preview" />
+        <span id="preview-name"></span>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Creative Name</label>
+      <input type="text" id="creative-name" placeholder="e.g. GOC Airport Ad 01" />
+    </div>
+    <div class="field-group">
+      <label>Program</label>
+      <select id="program-tag">
+        <option value="">Select program…</option>
+        <option value="GOC">GOC</option>
+        <option value="GHC">GHC</option>
+        <option value="AUSB">AUSB</option>
+        <option value="AUST PR">AUST PR</option>
+        <option value="CANADA PR">CANADA PR</option>
+        <option value="IELTS">IELTS</option>
+        <option value="GERMAN">GERMAN</option>
+        <option value="ALUM WEBINAR">ALUM WEBINAR</option>
+        <option value="AWARENESS">AWARENESS</option>
+        <option value="OTHERS">OTHERS</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Month</label>
+      <input type="text" id="month" placeholder="e.g. Jun 2026" />
+    </div>
+    <div class="field-group">
+      <label>Notes</label>
+      <textarea id="notes" placeholder="Context, version info…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button id="submit-btn" onclick="submitEntry()">Save Creative</button>
+      <button id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel</button>
+    </div>
+  </aside>
+
+  <!-- ── Analyst Sidebar ── -->
+  <aside class="sidebar" id="sidebar-analyst" style="display:none">
+    <div class="sidebar-title">📊 Import Metrics</div>
+    <div class="sidebar-desc">Upload a JSON file exported from your ad platform. Creative Name is the unique identifier for matching.</div>
+    <div class="field-group" style="margin-top:8px">
+      <label>JSON Schema (expected keys)</label>
+      <div class="schema-box">
+        <div class="schema-key">creative_name</div>
+        <div class="schema-key">ctr</div>
+        <div class="schema-key">clicks</div>
+        <div class="schema-key">reach</div>
+        <div class="schema-key">budget_spent</div>
+        <div class="schema-key">total_leads</div>
+        <div class="schema-key">mql_leads</div>
+        <div class="schema-key">mql_percent</div>
+        <div class="schema-key">click_to_lead_ratio</div>
+        <div class="schema-key">webinar_booked</div>
+        <div class="schema-key">webinar_attended</div>
+        <div class="schema-key">converted</div>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Upload JSON File</label>
+      <div class="drop-zone" id="json-drop-zone">
+        <input type="file" id="json-file-input" accept=".json" />
+        <div class="drop-inner">
+          <span class="drop-icon">{ }</span>
+          <span>Drop or click to upload</span>
+          <span id="upload-file-name" style="font-size:0.72rem;color:var(--accent-dim);margin-top:2px"></span>
         </div>
       </div>
     </div>
+    <div id="upload-summary-row" style="display:none" class="upload-summary-row"></div>
+    <div id="upload-preview-wrap" style="display:none">
+      <div class="upload-table-wrap">
+        <table class="upload-preview-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Creative Name</th>
+              <th>CTR</th>
+              <th>Clicks</th>
+              <th>Reach</th>
+              <th>Spent</th>
+              <th>Leads</th>
+              <th>MQL</th>
+              <th>MQL%</th>
+              <th>C2L</th>
+              <th>W.Book</th>
+              <th>W.Att</th>
+              <th>Conv</th>
+              <th>Allow OW</th>
+            </tr>
+          </thead>
+          <tbody id="upload-preview-body"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px">
+        <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">Confirm Import</button>
+      </div>
+    </div>
+  </aside>
 
-    <!-- Upload JSON Modal -->
-    <div id="upload-modal" class="modal" onclick="closeUploadModalOutside(event)">
-      <div class="upload-modal-box">
-        <div class="upload-modal-header">
-          <div>
-            <div class="upload-modal-title">Import Metrics via JSON</div>
-            <div class="upload-modal-sub">Matches by Creative Name. Won't overwrite existing metrics unless you allow it per row.</div>
+  <!-- ── Main Table ── -->
+  <main class="main-content">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input type="text" id="search-input" placeholder="Search creative or tag…" oninput="applyFilters()" />
+        <select id="approval-filter" onchange="applyFilters()">
+          <option value="">All Status</option>
+          <option value="Approved">Approved</option>
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Needs Revision">Needs Revision</option>
+        </select>
+        <select id="tag-filter" onchange="applyFilters()">
+          <option value="">All Programs</option>
+          <option value="GOC">GOC</option>
+          <option value="GHC">GHC</option>
+          <option value="AUSB">AUSB</option>
+          <option value="AUST PR">AUST PR</option>
+          <option value="CANADA PR">CANADA PR</option>
+          <option value="IELTS">IELTS</option>
+          <option value="GERMAN">GERMAN</option>
+          <option value="ALUM WEBINAR">ALUM WEBINAR</option>
+          <option value="AWARENESS">AWARENESS</option>
+          <option value="OTHERS">OTHERS</option>
+        </select>
+      </div>
+      <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
+    </div>
+
+    <div class="table-shell">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th class="col-img">Image</th>
+            <th class="col-name">Name</th>
+            <th class="col-tag">Program</th>
+            <th class="col-month">Month</th>
+            <th class="col-status">Status</th>
+            <th class="col-score sortable" data-col="bl_score" onclick="toggleSort('bl_score')">BL <span class="sort-arrow"></span></th>
+            <th class="col-score sortable" data-col="pr_score" onclick="toggleSort('pr_score')">PR <span class="sort-arrow"></span></th>
+            <th class="col-score sortable" data-col="ta_score" onclick="toggleSort('ta_score')">TA <span class="sort-arrow"></span></th>
+            <th class="col-score sortable" data-col="avg_score" onclick="toggleSort('avg_score')">AVG <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="ctr" onclick="toggleSort('ctr')">CTR <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="clicks" onclick="toggleSort('clicks')">Clicks <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="reach" onclick="toggleSort('reach')">Reach <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="budget_spent" onclick="toggleSort('budget_spent')">Spent <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="total_leads" onclick="toggleSort('total_leads')">Leads <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="mql_leads" onclick="toggleSort('mql_leads')">MQL <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="mql_percent" onclick="toggleSort('mql_percent')">MQL% <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="click_to_lead_ratio" onclick="toggleSort('click_to_lead_ratio')">C2L <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="webinar_booked" onclick="toggleSort('webinar_booked')">W.Book <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="webinar_attended" onclick="toggleSort('webinar_attended')">W.Att <span class="sort-arrow"></span></th>
+            <th class="col-metric sortable" data-col="converted" onclick="toggleSort('converted')">Conv <span class="sort-arrow"></span></th>
+            <th class="col-date sortable" data-col="created_at" onclick="toggleSort('created_at')">Date <span class="sort-arrow"></span></th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody id="log-body">
+          <tr><td colspan="23" class="empty-cell">
+            <div class="empty-state"><div class="empty-icon">◫</div><p>No entries yet.</p></div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- ── Review Modal ── -->
+<div id="review-modal" class="modal" onclick="closeReviewModalOutside(event)">
+  <div class="review-modal-box">
+    <button class="modal-close" onclick="closeReviewModal()">✕</button>
+    <div class="review-layout">
+
+      <!-- Left: image + scores -->
+      <div class="review-left">
+        <div class="review-img-wrap">
+          <img id="review-img" alt="creative" />
+        </div>
+        <div class="review-name" id="review-name"></div>
+        <div class="review-meta-row">
+          <span id="review-tag-pill" class="tag-pill"></span>
+          <span id="review-month-pill" class="month-pill"></span>
+        </div>
+        <div class="review-score-boxes">
+          <div class="rsbox">
+            <label>BL</label>
+            <input type="number" id="review-bl" min="1" max="5" step="0.1" placeholder="–" />
           </div>
-          <button class="modal-close" onclick="closeUploadModal()">✕</button>
+          <div class="rsbox">
+            <label>PR</label>
+            <input type="number" id="review-pr" min="1" max="5" step="0.1" placeholder="–" />
+          </div>
+          <div class="rsbox">
+            <label>TA</label>
+            <input type="number" id="review-ta" min="1" max="5" step="0.1" placeholder="–" />
+          </div>
+        </div>
+        <div class="review-approval-row">
+          <button class="approval-action-btn approve" onclick="setReviewApproval('Approved')">✓ Approve</button>
+          <button class="approval-action-btn revise" onclick="setReviewApproval('Needs Revision')">↺ Revise</button>
+          <button class="approval-action-btn reject" onclick="setReviewApproval('Rejected')">✕ Reject</button>
+        </div>
+        <div id="review-approval-display" class="review-approval-display"></div>
+        <button class="submit-review-btn" onclick="submitReview()">Save Review</button>
+      </div>
+
+      <!-- Right: rubric + feedback -->
+      <div class="review-right">
+        <div class="review-tabs">
+          <button class="rtab active" onclick="switchReviewTab('rubric', this)">Rubric</button>
+          <button class="rtab" onclick="switchReviewTab('feedback', this)">Feedback</button>
         </div>
 
-        <div id="upload-drop-zone" class="upload-drop-zone">
-          <input type="file" id="json-file-input" accept=".json" />
-          <div class="drop-inner">
-            <span class="drop-icon" style="font-size:2rem">{ }</span>
-            <span>Drop or click to upload <strong>.json</strong></span>
-            <span id="upload-file-name" style="font-size:0.75rem;color:var(--accent-dim);margin-top:2px"></span>
+        <!-- Rubric tab -->
+        <div id="rtab-rubric" class="rtab-content">
+          <div class="rubric-section">
+            <div class="rubric-section-title">Product Relevance — BL Score</div>
+            <div class="rubric-rows">
+              <div class="rubric-row"><span class="rnum">1</span><div class="rdetail"><div class="rmetric">Image–Product Fit</div><div class="rdesc">Hero image directly represents the product. No generic stock imagery.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">2</span><div class="rdetail"><div class="rmetric">Key Message Alignment</div><div class="rdesc">SMP is clearly communicated. Creative doesn't dilute the core message.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">3</span><div class="rdetail"><div class="rmetric">Product Feature Highlight</div><div class="rdesc">Most relevant USP is prominently featured. Benefit is clear at a glance.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">4</span><div class="rdetail"><div class="rmetric">Offer / Promotion Clarity</div><div class="rdesc">Promotional offer is clearly stated with correct details and dates.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">5</span><div class="rdetail"><div class="rmetric">Platform & Placement Fit</div><div class="rdesc">Format, tone, and style match the intended platform.</div></div><span class="rweight med">Med</span></div>
+              <div class="rubric-row"><span class="rnum">6</span><div class="rdetail"><div class="rmetric">Cultural Sensitivity</div><div class="rdesc">Appropriate for target market. No unintended offensive elements.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">7</span><div class="rdetail"><div class="rmetric">On-Brief Score</div><div class="rdesc">Holistic assessment — does creative fulfil the campaign brief objectives?</div></div><span class="rweight high">High</span></div>
+            </div>
+          </div>
+          <div class="rubric-section">
+            <div class="rubric-section-title">Technical Aspects — PR Score</div>
+            <div class="rubric-rows">
+              <div class="rubric-row"><span class="rnum">1</span><div class="rdetail"><div class="rmetric">Visual Hierarchy</div><div class="rdesc">Eye flow is clear: hero visual → key message → CTA.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">2</span><div class="rdetail"><div class="rmetric">Image Resolution & Quality</div><div class="rdesc">All images are high resolution. No blurring or pixelation.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">3</span><div class="rdetail"><div class="rmetric">Layout & Composition</div><div class="rdesc">Elements are balanced, aligned, and spaced. White space used well.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">4</span><div class="rdetail"><div class="rmetric">Colour Contrast & Legibility</div><div class="rdesc">Sufficient contrast. All copy readable at intended display size.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">5</span><div class="rdetail"><div class="rmetric">Ad Size & Dimensions</div><div class="rdesc">Sized to exact platform specs. No unintended cropping or stretching.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">6</span><div class="rdetail"><div class="rmetric">Safe Zone Compliance</div><div class="rdesc">All critical content falls within platform safe zone.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">7</span><div class="rdetail"><div class="rmetric">File Format & Size</div><div class="rdesc">Correct format and within platform file size limit.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">8</span><div class="rdetail"><div class="rmetric">Mobile Rendering</div><div class="rdesc">Previewed on mobile. Text legible and layout holds at small sizes.</div></div><span class="rweight high">High</span></div>
+              <div class="rubric-row"><span class="rnum">9</span><div class="rdetail"><div class="rmetric">Animation / Video Pacing</div><div class="rdesc">Timing and transitions feel natural. Duration within platform limits.</div></div><span class="rweight med">Med</span></div>
+              <div class="rubric-row"><span class="rnum">10</span><div class="rdetail"><div class="rmetric">Text-to-Image Ratio</div><div class="rdesc">Text overlay doesn't exceed platform limits (Meta: aim for &lt;20%).</div></div><span class="rweight med">Med</span></div>
+              <div class="rubric-row"><span class="rnum">11</span><div class="rdetail"><div class="rmetric">Consistency Across Variants</div><div class="rdesc">All size variants are visually consistent. No rogue colours or crops.</div></div><span class="rweight med">Med</span></div>
+              <div class="rubric-row"><span class="rnum">12</span><div class="rdetail"><div class="rmetric">Overall Aesthetic Appeal</div><div class="rdesc">Is the creative visually striking, polished, and thumb-stopping?</div></div><span class="rweight med">Med</span></div>
+            </div>
           </div>
         </div>
 
-        <div id="upload-preview-section" style="display:none">
-          <div class="upload-summary-row" id="upload-summary"></div>
-
-          <div class="upload-table-wrap">
-            <table class="upload-preview-table">
-              <thead>
-                <tr>
-                  <th>Status</th>
-                  <th>Creative Name</th>
-                  <th>CTR</th>
-                  <th>Clicks</th>
-                  <th>Reach</th>
-                  <th>Spent</th>
-                  <th>Leads</th>
-                  <th>MQL</th>
-                  <th>MQL%</th>
-                  <th>C2L</th>
-                  <th>W.Book</th>
-                  <th>W.Att</th>
-                  <th>Conv</th>
-                  <th>Allow OW</th>
-                </tr>
-              </thead>
-              <tbody id="upload-preview-body"></tbody>
-            </table>
+        <!-- Feedback tab -->
+        <div id="rtab-feedback" class="rtab-content" style="display:none">
+          <div class="field-group" style="margin-bottom:16px">
+            <label>Feedback</label>
+            <textarea id="review-feedback" placeholder="What works, what doesn't, specific issues observed…" style="min-height:120px"></textarea>
           </div>
-        </div>
-
-        <div class="upload-modal-footer">
-          <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()" style="display:none">
-            Confirm Import
-          </button>
+          <div class="field-group">
+            <label>Suggestions</label>
+            <textarea id="review-suggestions" placeholder="Specific changes to make, alternate directions to try…" style="min-height:120px"></textarea>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <div id="toast"></div>
+<!-- ── Metrics Modal ── -->
+<div id="metrics-modal" class="modal" onclick="closeMetricsModalOutside(event)">
+  <div class="metrics-modal-box">
+    <button class="modal-close" onclick="closeMetricsModal()">✕</button>
+    <div class="metrics-modal-header">
+      <div>
+        <div id="metrics-modal-name" class="metrics-modal-title"></div>
+        <div class="metrics-modal-sub">
+          <span id="metrics-tag-pill" class="tag-pill"></span>
+          <span id="metrics-month-pill" class="month-pill"></span>
+          <span id="metrics-status-badge"></span>
+        </div>
+      </div>
+    </div>
+    <div class="metrics-grid" id="metrics-grid"></div>
+    <div class="metrics-scores-row">
+      <div class="mscore-chip"><label>BL</label><strong id="mm-bl">–</strong></div>
+      <div class="mscore-chip"><label>PR</label><strong id="mm-pr">–</strong></div>
+      <div class="mscore-chip"><label>TA</label><strong id="mm-ta">–</strong></div>
+      <div class="mscore-chip avg"><label>AVG</label><strong id="mm-avg">–</strong></div>
+    </div>
+    <div class="metrics-feedback-row" id="metrics-feedback-row" style="display:none">
+      <div class="mfb-block"><label>Feedback</label><p id="mm-feedback"></p></div>
+      <div class="mfb-block"><label>Suggestions</label><p id="mm-suggestions"></p></div>
+    </div>
+  </div>
+</div>
 
-    <script src="db.js"></script>
-    <script src="ui.js"></script>
-    <script src="filters.js"></script>
-    <script src="upload.js"></script>
-    <script src="app.js"></script>
-  </body>
+<div id="toast"></div>
+
+<script src="db.js"></script>
+<script src="ui.js"></script>
+<script src="filters.js"></script>
+<script src="upload.js"></script>
+<script src="app.js"></script>
+</body>
 </html>
