@@ -20,16 +20,19 @@ function switchRole(role) {
   });
 
   // Show/hide sidebars
-  document.getElementById("sidebar-uploader").style.display = role === "uploader" ? "flex" : "none";
-  document.getElementById("sidebar-analyst").style.display  = role === "analyst"  ? "flex" : "none";
+  const uploaderSidebar = document.getElementById("sidebar-uploader");
+  const analystSidebar  = document.getElementById("sidebar-analyst");
 
-  // No sidebar for reviewer — full width
-  const layout = document.querySelector(".layout");
   if (role === "reviewer") {
-    layout.style.gridTemplateColumns = "0 1fr";
+    uploaderSidebar.style.display = "none";
+    analystSidebar.style.display  = "none";
+    document.querySelector(".layout").style.gridTemplateColumns = "1fr";
   } else {
-    layout.style.gridTemplateColumns = "var(--sidebar-w) 1fr";
+    uploaderSidebar.style.display = role === "uploader" ? "flex" : "none";
+    analystSidebar.style.display  = role === "analyst"  ? "flex" : "none";
+    document.querySelector(".layout").style.gridTemplateColumns = "var(--sidebar-w) 1fr";
   }
+
 
   // Re-render table with role-appropriate buttons
   applyFilters();
