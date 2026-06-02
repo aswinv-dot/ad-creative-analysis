@@ -1,7 +1,7 @@
 // ── app.js — Main orchestration: form, submit, edit, delete, load ──
 
 let _selectedFile = null;
-let _editingId = null; // null = add mode, string = edit mode
+let _editingId = null;
 
 // ── Init ───────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
@@ -9,7 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
   loadEntries();
 });
 
-// ── Load entries from DB ───────────────────────────────────
+// ── Load entries ───────────────────────────────────────────
 async function loadEntries() {
   try {
     const rows = await dbLoadEntries();
@@ -32,7 +32,8 @@ async function submitEntry() {
   const bl       = document.getElementById("bl-score").value.trim();
   const pr       = document.getElementById("pr-score").value.trim();
   const ta       = document.getElementById("ta-score").value.trim();
-  const tag      = document.getElementById("program-tag").value.trim();
+  const tag      = document.getElementById("program-tag").value;
+  const month    = document.getElementById("month").value.trim();
 
   const btn = document.getElementById("submit-btn");
   btn.disabled = true;
@@ -40,7 +41,6 @@ async function submitEntry() {
 
   try {
     let imageUrl = null;
-
     if (_selectedFile) {
       imageUrl = await dbUploadImage(_selectedFile);
     }
@@ -49,16 +49,16 @@ async function submitEntry() {
       creative_name: name,
       approval,
       notes,
-      bl_score: bl !== "" ? bl : null,
-      pr_score: pr !== "" ? pr : null,
-      ta_score: ta !== "" ? ta : null,
+      bl_score:    bl !== "" ? bl : null,
+      pr_score:    pr !== "" ? pr : null,
+      ta_score:    ta !== "" ? ta : null,
       program_tag: tag || null,
+      month:       month || null,
     };
 
     if (imageUrl) fields.image_url = imageUrl;
 
     if (_editingId) {
-      // In edit mode, only overwrite image_url if a new file was chosen
       await dbUpdateEntry(_editingId, fields);
       showToast("Entry updated", "success");
     } else {
@@ -86,7 +86,6 @@ function startEdit(id) {
 
   _editingId = id;
 
-  // Populate form
   document.getElementById("creative-name").value = row.creative_name || "";
   document.getElementById("approval").value       = row.approval || "Pending";
   document.getElementById("notes").value          = row.notes || "";
@@ -94,8 +93,8 @@ function startEdit(id) {
   document.getElementById("pr-score").value       = row.pr_score ?? "";
   document.getElementById("ta-score").value       = row.ta_score ?? "";
   document.getElementById("program-tag").value    = row.program_tag || "";
+  document.getElementById("month").value          = row.month || "";
 
-  // Show existing image as preview if available
   if (row.image_url) {
     document.getElementById("preview-img").src = row.image_url;
     document.getElementById("preview-name").textContent = "Current image (upload new to replace)";
@@ -104,15 +103,12 @@ function startEdit(id) {
     document.getElementById("preview-wrap").style.display = "none";
   }
 
-  // UI updates
   const label = document.getElementById("form-mode-label");
   label.textContent = "✏ Editing Entry";
   label.classList.add("edit-mode");
 
   document.getElementById("submit-btn").textContent = "Update Entry";
   document.getElementById("cancel-btn").style.display = "block";
-
-  // Scroll sidebar to top
   document.querySelector(".sidebar").scrollTop = 0;
 
   showToast("Editing: " + row.creative_name, "info");
@@ -147,6 +143,7 @@ function resetForm() {
   document.getElementById("pr-score").value       = "";
   document.getElementById("ta-score").value       = "";
   document.getElementById("program-tag").value    = "";
+  document.getElementById("month").value          = "";
   document.getElementById("image-input").value    = "";
   document.getElementById("preview-wrap").style.display = "none";
 
@@ -158,7 +155,7 @@ function resetForm() {
   document.getElementById("cancel-btn").style.display = "none";
 }
 
-// ── Drop zone setup ────────────────────────────────────────
+// ── Drop zone ──────────────────────────────────────────────
 function setupDropZone() {
   const zone  = document.getElementById("drop-zone");
   const input = document.getElementById("image-input");
