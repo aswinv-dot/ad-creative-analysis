@@ -208,27 +208,29 @@
         <div class="review-img-wrap">
           <img id="review-img" alt="creative" />
         </div>
-        <div class="review-name" id="review-name"></div>
-        <div class="review-meta-row">
-          <span id="review-tag-pill" class="tag-pill"></span>
-          <span id="review-month-pill" class="month-pill"></span>
-        </div>
+        <div class="review-left-meta">
+          <div class="review-name" id="review-name"></div>
+          <div class="review-meta-row">
+            <span id="review-tag-pill" class="tag-pill"></span>
+            <span id="review-month-pill" class="month-pill"></span>
+          </div>
 
-        <!-- Computed score display -->
-        <div class="review-score-display">
-          <div class="rsd-item"><label>BL</label><span id="review-bl-display">–</span></div>
-          <div class="rsd-item"><label>PR</label><span id="review-pr-display">–</span></div>
-          <div class="rsd-item"><label>TA</label><span id="review-ta-display">–</span></div>
-          <div class="rsd-item avg"><label>AVG</label><span id="review-avg-display">–</span></div>
-        </div>
+          <!-- Computed score display -->
+          <div class="review-score-display">
+            <div class="rsd-item"><label>BL</label><span id="review-bl-display">–</span></div>
+            <div class="rsd-item"><label>PR</label><span id="review-pr-display">–</span></div>
+            <div class="rsd-item"><label>TA</label><span id="review-ta-display">–</span></div>
+            <div class="rsd-item avg"><label>AVG</label><span id="review-avg-display">–</span></div>
+          </div>
 
-        <div class="review-approval-row">
-          <button class="approval-action-btn approve" onclick="setReviewApproval('Approved')">✓ Approve</button>
-          <button class="approval-action-btn revise"  onclick="setReviewApproval('Needs Revision')">↺ Revise</button>
-          <button class="approval-action-btn reject"  onclick="setReviewApproval('Rejected')">✕ Reject</button>
+          <div class="review-approval-row">
+            <button class="approval-action-btn approve" onclick="setReviewApproval('Approved')">✓ Approve</button>
+            <button class="approval-action-btn revise"  onclick="setReviewApproval('Needs Revision')">↺ Revise</button>
+            <button class="approval-action-btn reject"  onclick="setReviewApproval('Rejected')">✕ Reject</button>
+          </div>
+          <div id="review-approval-display" class="review-approval-display">No decision yet</div>
+          <button class="submit-review-btn" onclick="submitReview()">Save Review</button>
         </div>
-        <div id="review-approval-display" class="review-approval-display">No decision yet</div>
-        <button class="submit-review-btn" onclick="submitReview()">Save Review</button>
       </div>
 
       <!-- Right panel -->
