@@ -36,17 +36,14 @@
 
 <div class="layout">
 
-  <!-- ── Uploader Sidebar ── -->
+  <!-- Uploader Sidebar -->
   <aside class="sidebar" id="sidebar-uploader">
     <div class="sidebar-title" id="form-mode-label">+ New Creative</div>
     <div class="field-group">
       <label>Creative Image</label>
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="image-input" accept="image/*" />
-        <div class="drop-inner">
-          <span class="drop-icon">⬆</span>
-          <span>Drop or click to upload</span>
-        </div>
+        <div class="drop-inner"><span class="drop-icon">⬆</span><span>Drop or click to upload</span></div>
       </div>
       <div id="preview-wrap" style="display:none">
         <img id="preview-img" alt="preview" />
@@ -87,12 +84,12 @@
     </div>
   </aside>
 
-  <!-- ── Analyst Sidebar ── -->
+  <!-- Analyst Sidebar -->
   <aside class="sidebar" id="sidebar-analyst" style="display:none">
     <div class="sidebar-title">📊 Import Metrics</div>
     <div class="sidebar-desc">Upload a JSON file exported from your ad platform. Creative Name is the unique identifier for matching.</div>
     <div class="field-group" style="margin-top:8px">
-      <label>JSON Schema (expected keys)</label>
+      <label>Expected JSON keys</label>
       <div class="schema-box">
         <div class="schema-key">creative_name</div>
         <div class="schema-key">ctr</div>
@@ -125,32 +122,19 @@
         <table class="upload-preview-table">
           <thead>
             <tr>
-              <th>Status</th>
-              <th>Creative Name</th>
-              <th>CTR</th>
-              <th>Clicks</th>
-              <th>Reach</th>
-              <th>Spent</th>
-              <th>Leads</th>
-              <th>MQL</th>
-              <th>MQL%</th>
-              <th>C2L</th>
-              <th>W.Book</th>
-              <th>W.Att</th>
-              <th>Conv</th>
-              <th>Allow OW</th>
+              <th>Status</th><th>Creative Name</th><th>CTR</th><th>Clicks</th><th>Reach</th>
+              <th>Spent</th><th>Leads</th><th>MQL</th><th>MQL%</th><th>C2L</th>
+              <th>W.Book</th><th>W.Att</th><th>Conv</th><th>OW?</th>
             </tr>
           </thead>
           <tbody id="upload-preview-body"></tbody>
         </table>
       </div>
-      <div style="margin-top:12px">
-        <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">Confirm Import</button>
-      </div>
+      <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">Confirm Import</button>
     </div>
   </aside>
 
-  <!-- ── Main Table ── -->
+  <!-- Main Table -->
   <main class="main-content">
     <div class="toolbar">
       <div class="toolbar-left">
@@ -164,16 +148,11 @@
         </select>
         <select id="tag-filter" onchange="applyFilters()">
           <option value="">All Programs</option>
-          <option value="GOC">GOC</option>
-          <option value="GHC">GHC</option>
-          <option value="AUSB">AUSB</option>
-          <option value="AUST PR">AUST PR</option>
-          <option value="CANADA PR">CANADA PR</option>
-          <option value="IELTS">IELTS</option>
-          <option value="GERMAN">GERMAN</option>
-          <option value="ALUM WEBINAR">ALUM WEBINAR</option>
-          <option value="AWARENESS">AWARENESS</option>
-          <option value="OTHERS">OTHERS</option>
+          <option value="GOC">GOC</option><option value="GHC">GHC</option>
+          <option value="AUSB">AUSB</option><option value="AUST PR">AUST PR</option>
+          <option value="CANADA PR">CANADA PR</option><option value="IELTS">IELTS</option>
+          <option value="GERMAN">GERMAN</option><option value="ALUM WEBINAR">ALUM WEBINAR</option>
+          <option value="AWARENESS">AWARENESS</option><option value="OTHERS">OTHERS</option>
         </select>
       </div>
       <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
@@ -193,17 +172,17 @@
             <th class="col-score sortable" data-col="pr_score" onclick="toggleSort('pr_score')">PR <span class="sort-arrow"></span></th>
             <th class="col-score sortable" data-col="ta_score" onclick="toggleSort('ta_score')">TA <span class="sort-arrow"></span></th>
             <th class="col-score sortable" data-col="avg_score" onclick="toggleSort('avg_score')">AVG <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="ctr" onclick="toggleSort('ctr')">CTR <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="clicks" onclick="toggleSort('clicks')">Clicks <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="reach" onclick="toggleSort('reach')">Reach <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="budget_spent" onclick="toggleSort('budget_spent')">Spent <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="total_leads" onclick="toggleSort('total_leads')">Leads <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="mql_leads" onclick="toggleSort('mql_leads')">MQL <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="mql_percent" onclick="toggleSort('mql_percent')">MQL% <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="click_to_lead_ratio" onclick="toggleSort('click_to_lead_ratio')">C2L <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="webinar_booked" onclick="toggleSort('webinar_booked')">W.Book <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="webinar_attended" onclick="toggleSort('webinar_attended')">W.Att <span class="sort-arrow"></span></th>
-            <th class="col-metric sortable" data-col="converted" onclick="toggleSort('converted')">Conv <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="ctr" onclick="toggleSort('ctr')">CTR <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="clicks" onclick="toggleSort('clicks')">Clicks <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="reach" onclick="toggleSort('reach')">Reach <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="budget_spent" onclick="toggleSort('budget_spent')">Spent <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="total_leads" onclick="toggleSort('total_leads')">Leads <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="mql_leads" onclick="toggleSort('mql_leads')">MQL <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="mql_percent" onclick="toggleSort('mql_percent')">MQL% <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="click_to_lead_ratio" onclick="toggleSort('click_to_lead_ratio')">C2L <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="webinar_booked" onclick="toggleSort('webinar_booked')">W.Book <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="webinar_attended" onclick="toggleSort('webinar_attended')">W.Att <span class="sort-arrow"></span></th>
+            <th class="col-metric metric-th sortable" data-col="converted" onclick="toggleSort('converted')">Conv <span class="sort-arrow"></span></th>
             <th class="col-date sortable" data-col="created_at" onclick="toggleSort('created_at')">Date <span class="sort-arrow"></span></th>
             <th class="col-actions"></th>
           </tr>
@@ -218,13 +197,13 @@
   </main>
 </div>
 
-<!-- ── Review Modal ── -->
+<!-- Review Modal -->
 <div id="review-modal" class="modal" onclick="closeReviewModalOutside(event)">
   <div class="review-modal-box">
     <button class="modal-close" onclick="closeReviewModal()">✕</button>
     <div class="review-layout">
 
-      <!-- Left: image + scores -->
+      <!-- Left panel -->
       <div class="review-left">
         <div class="review-img-wrap">
           <img id="review-img" alt="creative" />
@@ -234,78 +213,56 @@
           <span id="review-tag-pill" class="tag-pill"></span>
           <span id="review-month-pill" class="month-pill"></span>
         </div>
-        <div class="review-score-boxes">
-          <div class="rsbox">
-            <label>BL</label>
-            <input type="number" id="review-bl" min="1" max="5" step="0.1" placeholder="–" />
-          </div>
-          <div class="rsbox">
-            <label>PR</label>
-            <input type="number" id="review-pr" min="1" max="5" step="0.1" placeholder="–" />
-          </div>
-          <div class="rsbox">
-            <label>TA</label>
-            <input type="number" id="review-ta" min="1" max="5" step="0.1" placeholder="–" />
-          </div>
+
+        <!-- Computed score display -->
+        <div class="review-score-display">
+          <div class="rsd-item"><label>BL</label><span id="review-bl-display">–</span></div>
+          <div class="rsd-item"><label>PR</label><span id="review-pr-display">–</span></div>
+          <div class="rsd-item"><label>TA</label><span id="review-ta-display">–</span></div>
+          <div class="rsd-item avg"><label>AVG</label><span id="review-avg-display">–</span></div>
         </div>
+
         <div class="review-approval-row">
           <button class="approval-action-btn approve" onclick="setReviewApproval('Approved')">✓ Approve</button>
-          <button class="approval-action-btn revise" onclick="setReviewApproval('Needs Revision')">↺ Revise</button>
-          <button class="approval-action-btn reject" onclick="setReviewApproval('Rejected')">✕ Reject</button>
+          <button class="approval-action-btn revise"  onclick="setReviewApproval('Needs Revision')">↺ Revise</button>
+          <button class="approval-action-btn reject"  onclick="setReviewApproval('Rejected')">✕ Reject</button>
         </div>
-        <div id="review-approval-display" class="review-approval-display"></div>
+        <div id="review-approval-display" class="review-approval-display">No decision yet</div>
         <button class="submit-review-btn" onclick="submitReview()">Save Review</button>
       </div>
 
-      <!-- Right: rubric + feedback -->
+      <!-- Right panel -->
       <div class="review-right">
         <div class="review-tabs">
-          <button class="rtab active" onclick="switchReviewTab('rubric', this)">Rubric</button>
+          <button class="rtab active" onclick="switchReviewTab('rubric-bl', this)">BL Rubric</button>
+          <button class="rtab" onclick="switchReviewTab('rubric-pr', this)">PR Rubric</button>
+          <button class="rtab" onclick="switchReviewTab('rubric-ta', this)">TA Rubric</button>
           <button class="rtab" onclick="switchReviewTab('feedback', this)">Feedback</button>
         </div>
 
-        <!-- Rubric tab -->
-        <div id="rtab-rubric" class="rtab-content">
-          <div class="rubric-section">
-            <div class="rubric-section-title">Product Relevance — BL Score</div>
-            <div class="rubric-rows">
-              <div class="rubric-row"><span class="rnum">1</span><div class="rdetail"><div class="rmetric">Image–Product Fit</div><div class="rdesc">Hero image directly represents the product. No generic stock imagery.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">2</span><div class="rdetail"><div class="rmetric">Key Message Alignment</div><div class="rdesc">SMP is clearly communicated. Creative doesn't dilute the core message.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">3</span><div class="rdetail"><div class="rmetric">Product Feature Highlight</div><div class="rdesc">Most relevant USP is prominently featured. Benefit is clear at a glance.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">4</span><div class="rdetail"><div class="rmetric">Offer / Promotion Clarity</div><div class="rdesc">Promotional offer is clearly stated with correct details and dates.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">5</span><div class="rdetail"><div class="rmetric">Platform & Placement Fit</div><div class="rdesc">Format, tone, and style match the intended platform.</div></div><span class="rweight med">Med</span></div>
-              <div class="rubric-row"><span class="rnum">6</span><div class="rdetail"><div class="rmetric">Cultural Sensitivity</div><div class="rdesc">Appropriate for target market. No unintended offensive elements.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">7</span><div class="rdetail"><div class="rmetric">On-Brief Score</div><div class="rdesc">Holistic assessment — does creative fulfil the campaign brief objectives?</div></div><span class="rweight high">High</span></div>
-            </div>
-          </div>
-          <div class="rubric-section">
-            <div class="rubric-section-title">Technical Aspects — PR Score</div>
-            <div class="rubric-rows">
-              <div class="rubric-row"><span class="rnum">1</span><div class="rdetail"><div class="rmetric">Visual Hierarchy</div><div class="rdesc">Eye flow is clear: hero visual → key message → CTA.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">2</span><div class="rdetail"><div class="rmetric">Image Resolution & Quality</div><div class="rdesc">All images are high resolution. No blurring or pixelation.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">3</span><div class="rdetail"><div class="rmetric">Layout & Composition</div><div class="rdesc">Elements are balanced, aligned, and spaced. White space used well.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">4</span><div class="rdetail"><div class="rmetric">Colour Contrast & Legibility</div><div class="rdesc">Sufficient contrast. All copy readable at intended display size.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">5</span><div class="rdetail"><div class="rmetric">Ad Size & Dimensions</div><div class="rdesc">Sized to exact platform specs. No unintended cropping or stretching.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">6</span><div class="rdetail"><div class="rmetric">Safe Zone Compliance</div><div class="rdesc">All critical content falls within platform safe zone.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">7</span><div class="rdetail"><div class="rmetric">File Format & Size</div><div class="rdesc">Correct format and within platform file size limit.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">8</span><div class="rdetail"><div class="rmetric">Mobile Rendering</div><div class="rdesc">Previewed on mobile. Text legible and layout holds at small sizes.</div></div><span class="rweight high">High</span></div>
-              <div class="rubric-row"><span class="rnum">9</span><div class="rdetail"><div class="rmetric">Animation / Video Pacing</div><div class="rdesc">Timing and transitions feel natural. Duration within platform limits.</div></div><span class="rweight med">Med</span></div>
-              <div class="rubric-row"><span class="rnum">10</span><div class="rdetail"><div class="rmetric">Text-to-Image Ratio</div><div class="rdesc">Text overlay doesn't exceed platform limits (Meta: aim for &lt;20%).</div></div><span class="rweight med">Med</span></div>
-              <div class="rubric-row"><span class="rnum">11</span><div class="rdetail"><div class="rmetric">Consistency Across Variants</div><div class="rdesc">All size variants are visually consistent. No rogue colours or crops.</div></div><span class="rweight med">Med</span></div>
-              <div class="rubric-row"><span class="rnum">12</span><div class="rdetail"><div class="rmetric">Overall Aesthetic Appeal</div><div class="rdesc">Is the creative visually striking, polished, and thumb-stopping?</div></div><span class="rweight med">Med</span></div>
-            </div>
-          </div>
+        <div id="rtab-rubric-bl" class="rtab-content">
+          <div class="rubric-section-title">Product Relevance — BL Score</div>
+          <div id="bl-star-rows" class="rubric-rows"></div>
         </div>
 
-        <!-- Feedback tab -->
+        <div id="rtab-rubric-pr" class="rtab-content" style="display:none">
+          <div class="rubric-section-title">Technical Aspects — PR Score</div>
+          <div id="pr-star-rows" class="rubric-rows"></div>
+        </div>
+
+        <div id="rtab-rubric-ta" class="rtab-content" style="display:none">
+          <div class="rubric-section-title">Target Audience — TA Score</div>
+          <div id="ta-star-rows" class="rubric-rows"></div>
+        </div>
+
         <div id="rtab-feedback" class="rtab-content" style="display:none">
-          <div class="field-group" style="margin-bottom:16px">
+          <div class="field-group" style="margin-bottom:14px">
             <label>Feedback</label>
-            <textarea id="review-feedback" placeholder="What works, what doesn't, specific issues observed…" style="min-height:120px"></textarea>
+            <textarea id="review-feedback" placeholder="What works, what doesn't, specific issues…" style="min-height:130px"></textarea>
           </div>
           <div class="field-group">
             <label>Suggestions</label>
-            <textarea id="review-suggestions" placeholder="Specific changes to make, alternate directions to try…" style="min-height:120px"></textarea>
+            <textarea id="review-suggestions" placeholder="Specific changes to make, alternate directions…" style="min-height:130px"></textarea>
           </div>
         </div>
       </div>
@@ -313,27 +270,25 @@
   </div>
 </div>
 
-<!-- ── Metrics Modal ── -->
+<!-- Metrics Modal -->
 <div id="metrics-modal" class="modal" onclick="closeMetricsModalOutside(event)">
   <div class="metrics-modal-box">
     <button class="modal-close" onclick="closeMetricsModal()">✕</button>
     <div class="metrics-modal-header">
-      <div>
-        <div id="metrics-modal-name" class="metrics-modal-title"></div>
-        <div class="metrics-modal-sub">
-          <span id="metrics-tag-pill" class="tag-pill"></span>
-          <span id="metrics-month-pill" class="month-pill"></span>
-          <span id="metrics-status-badge"></span>
-        </div>
+      <div id="metrics-modal-name" class="metrics-modal-title"></div>
+      <div class="metrics-modal-sub">
+        <span id="metrics-tag-pill" class="tag-pill"></span>
+        <span id="metrics-month-pill" class="month-pill"></span>
+        <span id="metrics-status-badge"></span>
       </div>
     </div>
-    <div class="metrics-grid" id="metrics-grid"></div>
     <div class="metrics-scores-row">
       <div class="mscore-chip"><label>BL</label><strong id="mm-bl">–</strong></div>
       <div class="mscore-chip"><label>PR</label><strong id="mm-pr">–</strong></div>
       <div class="mscore-chip"><label>TA</label><strong id="mm-ta">–</strong></div>
       <div class="mscore-chip avg"><label>AVG</label><strong id="mm-avg">–</strong></div>
     </div>
+    <div class="metrics-grid" id="metrics-grid"></div>
     <div class="metrics-feedback-row" id="metrics-feedback-row" style="display:none">
       <div class="mfb-block"><label>Feedback</label><p id="mm-feedback"></p></div>
       <div class="mfb-block"><label>Suggestions</label><p id="mm-suggestions"></p></div>
@@ -342,7 +297,6 @@
 </div>
 
 <div id="toast"></div>
-
 <script src="db.js"></script>
 <script src="ui.js"></script>
 <script src="filters.js"></script>
