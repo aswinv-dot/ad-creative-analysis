@@ -7,6 +7,12 @@ window._currentRole = "uploader";
 window.addEventListener("DOMContentLoaded", () => {
   setupDropZone();
   setupUploadDropZone();
+  // Read role from URL param
+  const params = new URLSearchParams(window.location.search);
+  const roleParam = params.get("role");
+  if (roleParam && ["uploader","reviewer","analyst"].includes(roleParam)) {
+    switchRole(roleParam);
+  }
   loadEntries();
 });
 
@@ -33,6 +39,11 @@ function switchRole(role) {
     document.querySelector(".layout").style.gridTemplateColumns = "var(--sidebar-w) 1fr";
   }
 
+
+  // Update URL param without reload
+  const url = new URL(window.location);
+  url.searchParams.set("role", role);
+  window.history.replaceState({}, "", url);
 
   // Re-render table with role-appropriate buttons
   applyFilters();
