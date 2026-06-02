@@ -1,176 +1,160 @@
-// ── app.js — Main orchestration: form, submit, edit, delete, load ──
+// ── app.js ──
 
 let _selectedFile = null;
 let _editingId = null;
+window._currentRole = "uploader";
 
-// ── Init ───────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   setupDropZone();
   setupUploadDropZone();
   loadEntries();
 });
 
+// ── Role switcher ──────────────────────────────────────────
+function switchRole(role) {
+  window._currentRole = role;
+
+  // Update buttons
+  document.querySelectorAll(".role-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.role === role);
+  });
+
+  // Show/hide sidebars
+  document.getElementById("sidebar-uploader").style.display = role === "uploader" ? "flex" : "none";
+  document.getElementById("sidebar-analyst").style.display  = role === "analyst"  ? "flex" : "none";
+
+  // No sidebar for reviewer — full width
+  const layout = document.querySelector(".layout");
+  if (role === "reviewer") {
+    layout.style.gridTemplateColumns = "0 1fr";
+  } else {
+    layout.style.gridTemplateColumns = "var(--sidebar-w) 1fr";
+  }
+
+  // Re-render table with role-appropriate buttons
+  applyFilters();
+}
+
 // ── Load entries ───────────────────────────────────────────
 async function loadEntries() {
   try {
     const rows = await dbLoadEntries();
     window._allRows = rows;
-    populateTagFilters(rows);
     applyFilters();
   } catch (err) {
-    console.error(err);
     showToast("Load error: " + err.message, "error");
   }
 }
 
-// ── Submit (add or update) ─────────────────────────────────
+// ── Submit (uploader) ──────────────────────────────────────
 async function submitEntry() {
   const name = document.getElementById("creative-name").value.trim();
   if (!name) { showToast("Creative name is required", "error"); return; }
 
-  const approval = document.getElementById("approval").value;
-  const notes    = document.getElementById("notes").value.trim();
-  const bl       = document.getElementById("bl-score").value.trim();
-  const pr       = document.getElementById("pr-score").value.trim();
-  const ta       = document.getElementById("ta-score").value.trim();
-  const tag      = document.getElementById("program-tag").value;
-  const month    = document.getElementById("month").value.trim();
+  const notes   = document.getElementById("notes").value.trim();
+  const tag     = document.getElementById("program-tag").value;
+  const month   = document.getElementById("month").value.trim();
 
   const btn = document.getElementById("submit-btn");
-  btn.disabled = true;
-  btn.textContent = _editingId ? "Updating…" : "Saving…";
+  btn.disabled = true; btn.textContent = _editingId ? "Updating…" : "Saving…";
 
   try {
     let imageUrl = null;
-    if (_selectedFile) {
-      imageUrl = await dbUploadImage(_selectedFile);
-    }
+    if (_selectedFile) imageUrl = await dbUploadImage(_selectedFile);
 
     const fields = {
       creative_name: name,
-      approval,
       notes,
-      bl_score:    bl !== "" ? bl : null,
-      pr_score:    pr !== "" ? pr : null,
-      ta_score:    ta !== "" ? ta : null,
-      program_tag: tag || null,
-      month:       month || null,
+      program_tag:  tag || null,
+      month:        month || null,
+      approval:     "Pending",
     };
-
     if (imageUrl) fields.image_url = imageUrl;
 
     if (_editingId) {
       await dbUpdateEntry(_editingId, fields);
-      showToast("Entry updated", "success");
+      showToast("Creative updated", "success");
     } else {
       fields.created_at = new Date().toISOString();
       if (!imageUrl) fields.image_url = null;
       await dbInsertEntry(fields);
-      showToast("Entry saved", "success");
+      showToast("Creative saved", "success");
     }
 
     resetForm();
     loadEntries();
   } catch (err) {
-    console.error(err);
     showToast("Error: " + err.message, "error");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Save Entry";
+    btn.disabled = false; btn.textContent = "Save Creative";
   }
 }
 
-// ── Edit mode ──────────────────────────────────────────────
+// ── Edit mode (uploader) ───────────────────────────────────
 function startEdit(id) {
   const row = window._allRows.find((r) => r.id === id);
   if (!row) return;
-
   _editingId = id;
 
-  document.getElementById("creative-name").value = row.creative_name || "";
-  document.getElementById("approval").value       = row.approval || "Pending";
-  document.getElementById("notes").value          = row.notes || "";
-  document.getElementById("bl-score").value       = row.bl_score ?? "";
-  document.getElementById("pr-score").value       = row.pr_score ?? "";
-  document.getElementById("ta-score").value       = row.ta_score ?? "";
-  document.getElementById("program-tag").value    = row.program_tag || "";
-  document.getElementById("month").value          = row.month || "";
+  document.getElementById("creative-name").value  = row.creative_name || "";
+  document.getElementById("notes").value           = row.notes || "";
+  document.getElementById("program-tag").value     = row.program_tag || "";
+  document.getElementById("month").value           = row.month || "";
 
   if (row.image_url) {
     document.getElementById("preview-img").src = row.image_url;
-    document.getElementById("preview-name").textContent = "Current image (upload new to replace)";
+    document.getElementById("preview-name").textContent = "Current image";
     document.getElementById("preview-wrap").style.display = "flex";
-  } else {
-    document.getElementById("preview-wrap").style.display = "none";
   }
 
   const label = document.getElementById("form-mode-label");
-  label.textContent = "✏ Editing Entry";
+  label.textContent = "✏ Editing";
   label.classList.add("edit-mode");
 
-  document.getElementById("submit-btn").textContent = "Update Entry";
+  document.getElementById("submit-btn").textContent = "Update Creative";
   document.getElementById("cancel-btn").style.display = "block";
-  document.querySelector(".sidebar").scrollTop = 0;
-
+  document.getElementById("sidebar-uploader").scrollTop = 0;
   showToast("Editing: " + row.creative_name, "info");
 }
 
-function cancelEdit() {
-  resetForm();
-  showToast("Edit cancelled", "");
+function cancelEdit() { resetForm(); }
+
+function resetForm() {
+  _editingId = null; _selectedFile = null;
+  document.getElementById("creative-name").value = "";
+  document.getElementById("notes").value          = "";
+  document.getElementById("program-tag").value    = "";
+  document.getElementById("month").value          = "";
+  document.getElementById("image-input").value    = "";
+  document.getElementById("preview-wrap").style.display = "none";
+  const label = document.getElementById("form-mode-label");
+  label.textContent = "+ New Creative";
+  label.classList.remove("edit-mode");
+  document.getElementById("submit-btn").textContent = "Save Creative";
+  document.getElementById("cancel-btn").style.display = "none";
 }
 
 // ── Delete ─────────────────────────────────────────────────
 async function deleteEntry(id) {
-  if (!confirm("Delete this entry permanently?")) return;
+  if (!confirm("Delete this creative permanently?")) return;
   try {
     await dbDeleteEntry(id);
-    showToast("Entry deleted", "success");
+    showToast("Deleted", "success");
     loadEntries();
   } catch (err) {
     showToast("Delete failed: " + err.message, "error");
   }
 }
 
-// ── Reset form ─────────────────────────────────────────────
-function resetForm() {
-  _editingId = null;
-  _selectedFile = null;
-
-  document.getElementById("creative-name").value = "";
-  document.getElementById("approval").value       = "Pending";
-  document.getElementById("notes").value          = "";
-  document.getElementById("bl-score").value       = "";
-  document.getElementById("pr-score").value       = "";
-  document.getElementById("ta-score").value       = "";
-  document.getElementById("program-tag").value    = "";
-  document.getElementById("month").value          = "";
-  document.getElementById("image-input").value    = "";
-  document.getElementById("preview-wrap").style.display = "none";
-
-  const label = document.getElementById("form-mode-label");
-  label.textContent = "+ New Entry";
-  label.classList.remove("edit-mode");
-
-  document.getElementById("submit-btn").textContent = "Save Entry";
-  document.getElementById("cancel-btn").style.display = "none";
-}
-
 // ── Drop zone ──────────────────────────────────────────────
 function setupDropZone() {
   const zone  = document.getElementById("drop-zone");
   const input = document.getElementById("image-input");
-
   input.addEventListener("change", (e) => handleFile(e.target.files[0]));
-
-  zone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    zone.classList.add("over");
-  });
+  zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("over"); });
   zone.addEventListener("dragleave", () => zone.classList.remove("over"));
   zone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    zone.classList.remove("over");
+    e.preventDefault(); zone.classList.remove("over");
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith("image/")) handleFile(file);
   });
