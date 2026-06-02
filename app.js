@@ -6,6 +6,7 @@ let _editingId = null;
 // ── Init ───────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   setupDropZone();
+  setupUploadDropZone();
   loadEntries();
 });
 
