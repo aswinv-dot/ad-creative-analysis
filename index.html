@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Approval Sign-Off Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <header>
+      <div class="header-left">
+        <div class="logo-mark">▣</div>
+        <div>
+          <h1>SIGN-OFF LOG</h1>
+          <p>Creative asset review &amp; approval tracking</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="stat-chip">Total <strong id="stat-total">0</strong></div>
+        <div class="stat-chip approved">Approved <strong id="stat-approved">0</strong></div>
+        <div class="stat-chip pending">Pending <strong id="stat-pending">0</strong></div>
+      </div>
+    </header>
+
+    <div class="layout">
+
+      <!-- ── Sidebar Form ── -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-title" id="form-mode-label">+ New Entry</div>
+
+        <div class="field-group">
+          <label>Creative Image</label>
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="image-input" accept="image/*" />
+            <div class="drop-inner">
+              <span class="drop-icon">⬆</span>
+              <span>Drop or click to upload</span>
+            </div>
+          </div>
+          <div id="preview-wrap" style="display:none">
+            <img id="preview-img" alt="preview" />
+            <span id="preview-name"></span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Creative Name</label>
+          <input type="text" id="creative-name" placeholder="e.g. GNM Nursing – Airport Ad" />
+        </div>
+
+        <div class="field-group">
+          <label>Program / Campaign Tag</label>
+          <input type="text" id="program-tag" placeholder="e.g. GOC, GHC, Ausbildung" list="tag-suggestions" />
+          <datalist id="tag-suggestions"></datalist>
+        </div>
+
+        <div class="field-group">
+          <label>Approval Status</label>
+          <select id="approval">
+            <option value="Approved">Approved</option>
+            <option value="Pending" selected>Pending</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Needs Revision">Needs Revision</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Notes</label>
+          <textarea id="notes" placeholder="Feedback, context, version notes…"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label>Scores — BL / PR / TA</label>
+          <div class="score-row">
+            <div class="score-field">
+              <span>BL</span>
+              <input type="number" id="bl-score" placeholder="–" min="0" max="10" step="0.1" />
+            </div>
+            <div class="score-field">
+              <span>PR</span>
+              <input type="number" id="pr-score" placeholder="–" min="0" max="10" step="0.1" />
+            </div>
+            <div class="score-field">
+              <span>TA</span>
+              <input type="number" id="ta-score" placeholder="–" min="0" max="10" step="0.1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="submit-btn" onclick="submitEntry()">Save Entry</button>
+          <button id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel</button>
+        </div>
+      </aside>
+
+      <!-- ── Main Log ── -->
+      <main class="main-content">
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <input type="text" id="search-input" placeholder="Search creative or tag…" oninput="applyFilters()" />
+            <select id="approval-filter" onchange="applyFilters()">
+              <option value="">All Status</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Needs Revision">Needs Revision</option>
+            </select>
+            <select id="tag-filter" onchange="applyFilters()">
+              <option value="">All Tags</option>
+            </select>
+          </div>
+          <button class="refresh-btn" onclick="loadEntries()">↺ Refresh</button>
+        </div>
+
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th class="col-img">Image</th>
+                <th class="col-name">Name</th>
+                <th class="col-tag">Tag</th>
+                <th class="col-status">Status</th>
+                <th class="col-notes">Notes</th>
+                <th class="col-score sortable" data-col="bl_score" onclick="toggleSort('bl_score')">BL <span class="sort-arrow"></span></th>
+                <th class="col-score sortable" data-col="pr_score" onclick="toggleSort('pr_score')">PR <span class="sort-arrow"></span></th>
+                <th class="col-score sortable" data-col="ta_score" onclick="toggleSort('ta_score')">TA <span class="sort-arrow"></span></th>
+                <th class="col-score sortable" data-col="avg_score" onclick="toggleSort('avg_score')">AVG <span class="sort-arrow"></span></th>
+                <th class="col-date sortable" data-col="created_at" onclick="toggleSort('created_at')">Date <span class="sort-arrow"></span></th>
+                <th class="col-actions"></th>
+              </tr>
+            </thead>
+            <tbody id="log-body">
+              <tr><td colspan="12" class="empty-cell">
+                <div class="empty-state">
+                  <div class="empty-icon">◫</div>
+                  <p>No entries yet. Add your first creative.</p>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal" onclick="closeModal(event)">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModalDirect()">✕</button>
+        <div class="modal-layout">
+          <div class="modal-img-wrap">
+            <img id="modal-img" alt="creative" />
+          </div>
+          <div class="modal-info">
+            <div class="modal-tag-row">
+              <span id="modal-tag-pill" class="tag-pill"></span>
+              <span id="modal-status-badge"></span>
+            </div>
+            <h2 id="modal-title"></h2>
+            <p id="modal-notes-text" class="modal-notes"></p>
+            <div class="modal-scores">
+              <div class="mscore"><label>BL</label><strong id="modal-bl"></strong></div>
+              <div class="mscore"><label>PR</label><strong id="modal-pr"></strong></div>
+              <div class="mscore"><label>TA</label><strong id="modal-ta"></strong></div>
+              <div class="mscore avg"><label>AVG</label><strong id="modal-avg"></strong></div>
+            </div>
+            <div class="modal-date" id="modal-date"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="db.js"></script>
+    <script src="ui.js"></script>
+    <script src="filters.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
