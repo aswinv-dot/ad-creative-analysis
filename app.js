@@ -54,6 +54,7 @@ async function loadEntries() {
   try {
     const rows = await dbLoadEntries();
     window._allRows = rows;
+    populateMonthFilter(rows);
     applyFilters();
   } catch (err) {
     showToast("Load error: " + err.message, "error");
