@@ -325,3 +325,40 @@ tbody td { padding: 9px 11px; vertical-align: middle; font-size: 0.82rem; }
 .review-right .field-group label { color: rgba(255,255,255,0.4); }
 .review-right textarea { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #fff; }
 .review-right textarea:focus { border-color: var(--accent-dim); background: rgba(255,255,255,0.09); }
+
+/* ── Lock screen ── */
+#lock-screen {
+  position: fixed; inset: 0; background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999999; transition: opacity 0.3s;
+}
+#lock-box {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; width: 100%; max-width: 340px; padding: 0 24px;
+}
+.lock-logo { font-size: 2rem; color: var(--accent); }
+.lock-title { font-family: var(--font-display); font-size: 1.1rem; color: #fff; letter-spacing: 0.14em; }
+.lock-sub { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+#lock-input {
+  width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12); border-radius: 10px;
+  font-family: var(--font-body); font-size: 1rem; color: #fff;
+  outline: none; text-align: center; letter-spacing: 0.1em;
+  transition: border-color 0.2s;
+}
+#lock-input:focus { border-color: var(--accent-dim); }
+#lock-btn {
+  width: 100%; padding: 12px; background: var(--accent); color: var(--ink);
+  border: none; border-radius: 10px; font-family: var(--font-display);
+  font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
+  cursor: pointer; transition: opacity 0.2s;
+}
+#lock-btn:hover { opacity: 0.88; }
+#lock-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#lock-error { font-size: 0.78rem; color: var(--danger); min-height: 16px; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-8px); }
+  40%,80%  { transform: translateX(8px); }
+}
+#lock-box.shake { animation: shake 0.45s ease; }
