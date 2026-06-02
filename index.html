@@ -274,24 +274,34 @@
 <div id="metrics-modal" class="modal" onclick="closeMetricsModalOutside(event)">
   <div class="metrics-modal-box">
     <button class="modal-close" onclick="closeMetricsModal()">✕</button>
-    <div class="metrics-modal-header">
-      <div id="metrics-modal-name" class="metrics-modal-title"></div>
-      <div class="metrics-modal-sub">
-        <span id="metrics-tag-pill" class="tag-pill"></span>
-        <span id="metrics-month-pill" class="month-pill"></span>
-        <span id="metrics-status-badge"></span>
+    <div class="metrics-modal-layout">
+      <!-- Image pane -->
+      <div class="metrics-modal-img-pane">
+        <img id="metrics-modal-img" alt="creative" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+        <div class="no-img" style="display:none">🖼</div>
       </div>
-    </div>
-    <div class="metrics-scores-row">
-      <div class="mscore-chip"><label>BL</label><strong id="mm-bl">–</strong></div>
-      <div class="mscore-chip"><label>PR</label><strong id="mm-pr">–</strong></div>
-      <div class="mscore-chip"><label>TA</label><strong id="mm-ta">–</strong></div>
-      <div class="mscore-chip avg"><label>AVG</label><strong id="mm-avg">–</strong></div>
-    </div>
-    <div class="metrics-grid" id="metrics-grid"></div>
-    <div class="metrics-feedback-row" id="metrics-feedback-row" style="display:none">
-      <div class="mfb-block"><label>Feedback</label><p id="mm-feedback"></p></div>
-      <div class="mfb-block"><label>Suggestions</label><p id="mm-suggestions"></p></div>
+      <!-- Right pane -->
+      <div class="metrics-modal-right">
+        <div class="metrics-modal-header">
+          <div id="metrics-modal-name" class="metrics-modal-title"></div>
+          <div class="metrics-modal-sub">
+            <span id="metrics-tag-pill" class="tag-pill"></span>
+            <span id="metrics-month-pill" class="month-pill"></span>
+            <span id="metrics-status-badge"></span>
+          </div>
+        </div>
+        <div class="metrics-scores-row">
+          <div class="mscore-chip"><label>BL</label><strong id="mm-bl">–</strong></div>
+          <div class="mscore-chip"><label>PR</label><strong id="mm-pr">–</strong></div>
+          <div class="mscore-chip"><label>TA</label><strong id="mm-ta">–</strong></div>
+          <div class="mscore-chip avg"><label>AVG</label><strong id="mm-avg">–</strong></div>
+        </div>
+        <div class="metrics-grid" id="metrics-grid"></div>
+        <div class="metrics-feedback-row" id="metrics-feedback-row" style="display:none">
+          <div class="mfb-block"><label>Feedback</label><p id="mm-feedback"></p></div>
+          <div class="mfb-block"><label>Suggestions</label><p id="mm-suggestions"></p></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
