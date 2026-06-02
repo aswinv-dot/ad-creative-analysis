@@ -311,6 +311,8 @@ function openMetricsModal(id) {
   const row = window._allRows.find((r) => r.id === id);
   if (!row) return;
 
+  document.getElementById("metrics-modal-img").src = row.image_url || "";
+  document.getElementById("metrics-modal-img").style.display = row.image_url ? "block" : "none";
   document.getElementById("metrics-modal-name").textContent = row.creative_name || "–";
   document.getElementById("metrics-tag-pill").textContent   = row.program_tag || "";
   document.getElementById("metrics-month-pill").textContent = row.month || "";
